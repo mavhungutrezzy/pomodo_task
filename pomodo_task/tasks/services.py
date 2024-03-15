@@ -100,5 +100,4 @@ class ProjectService(BaseService):
 
     @classmethod
     def get_all_tasks_in_project(cls, project):
-        return Task.objects.filter(project=project)
-    
+        return cls.model.objects.get(id=project.id).tasks
