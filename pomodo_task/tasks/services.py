@@ -46,6 +46,10 @@ class TaskService(BaseService):
         )
 
     @classmethod
+    def get_all_tasks(cls):
+        return cls.model.objects.all()
+
+    @classmethod
     def update_task(cls, task, name, description, due_date, priority, project):
         return cls.update(
             task,
@@ -55,6 +59,10 @@ class TaskService(BaseService):
             priority=priority,
             project=project,
         )
+
+    @classmethod
+    def get_task_by_id(cls, task_id):
+        return cls.model.objects.get(id=task_id)
 
 
 class ProjectService(BaseService):
@@ -69,3 +77,11 @@ class ProjectService(BaseService):
     @classmethod
     def update_project(cls, project, name, description):
         return cls.update(project, name=name, description=description)
+
+    @classmethod
+    def get_all_projects(cls):
+        return cls.model.objects.all()
+
+    @classmethod
+    def get_project_by_id(cls, project_id):
+        return cls.model.objects.get(id=project_id)

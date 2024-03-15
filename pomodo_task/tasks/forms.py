@@ -7,6 +7,7 @@ from .models import Task, Project
 class TaskForm(ModelForm):
     """Form for creating and editing tasks."""
 
+
     class Meta:
         model = Task
         fields = [

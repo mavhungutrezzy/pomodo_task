@@ -3,7 +3,9 @@ from django.urls import reverse
 from django.utils import timezone
 from core.abc import CoreModel
 from core.constants import PRIORITY_LEVELS
+from django.contrib.auth import get_user_model
 
+User = get_user_model()
 
 class Task(CoreModel):
     """
@@ -16,7 +18,7 @@ class Task(CoreModel):
     priority = models.CharField(max_length=10, choices=PRIORITY_LEVELS)
     is_completed = models.BooleanField(default=False)
     owner = models.ForeignKey(
-        "auth.User",
+        User,
         on_delete=models.CASCADE,
         related_name="tasks",
         null=True,
@@ -46,7 +48,7 @@ class Project(CoreModel):
     name = models.CharField(max_length=255)
     description = models.TextField(blank=True)
     owner = models.ForeignKey(
-        "auth.User",
+        User,
         on_delete=models.CASCADE,
         related_name="projects",
         null=True,
