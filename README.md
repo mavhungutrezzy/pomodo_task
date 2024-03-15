@@ -5,6 +5,9 @@ The Task Management Application with Pomodoro Technique Integration is a tool th
 [![Built with Cookiecutter Django](https://img.shields.io/badge/built%20with-Cookiecutter%20Django-ff69b4.svg?logo=cookiecutter)](https://github.com/cookiecutter/cookiecutter-django/)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
 
+## Screenshots
+![screenshot](https://i.ibb.co/6FcjkWP/image.png)
+
 License: BSD
 
 ## Settings
