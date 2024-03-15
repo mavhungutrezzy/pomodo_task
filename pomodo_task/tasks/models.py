@@ -23,9 +23,6 @@ class Project(models.Model):
     def __str__(self):
         return self.name
 
-    def get_absolute_url(self):
-        return reverse("project-detail", args=[str(self.id)])
-
 
 class Task(models.Model):
     name = models.CharField(max_length=255)
@@ -49,9 +46,6 @@ class Task(models.Model):
 
     def __str__(self):
         return self.name
-
-    def get_absolute_url(self):
-        return reverse("task-detail", args=[str(self.id)])
 
     def complete(self):
         self.is_completed = True

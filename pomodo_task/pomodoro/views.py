@@ -1,34 +1,49 @@
-# Create your views here.
-from django.shortcuts import render, redirect
-from django.http import JsonResponse
-from .services import PomodoroService
-from tasks.services import TaskService
+from rest_framework import viewsets
+from rest_framework.response import Response
+from rest_framework import status
+from pomodoro.models import PomodoroSession
+from pomodoro.serializers import (
+    PomodoroSessionSerializer,
+    PomodoroSessionCreateSerializer,
+)
+from pomodoro.services import PomodoroService
 
-def pomodoro_timer(request):
-    # Retrieve completed and ongoing Pomodoros from the service
-    completed_pomodoros = PomodoroService.get_completed_pomodoros(request.user)
-    ongoing_pomodoro = PomodoroService.get_ongoing_pomodoro()
 
-    # Get all tasks for the task selection dropdown
-    tasks = TaskService.get_all_tasks()
+class PomodoroSessionViewSet(viewsets.ModelViewSet):
+    queryset = PomodoroSession.objects.all()
+    serializer_class = PomodoroSessionSerializer
 
-    context = {
-        'completed_pomodoros': completed_pomodoros,
-        'ongoing_pomodoro': ongoing_pomodoro,
-        'tasks': tasks,
-    }
+    def create(self, request, *args, **kwargs):
+        serializer = PomodoroSessionCreateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        pomodoro_session = PomodoroService.start_pomodoro(
+            task=serializer.validated_data["task"],
+            is_break=serializer.validated_data["is_break"],
+            owner=request.user,
+        )
+        response_serializer = self.get_serializer(pomodoro_session)
+        return Response(response_serializer.data, status=status.HTTP_201_CREATED)
 
-    return render(request, 'pomodoro/pomodoro_timer.html', context)
-
-def start_pomodoro(request):
-    if request.method == 'POST':
-        task_id = request.POST.get('task')
-        task = TaskService.get_task_by_id(task_id)
-        PomodoroService.start_pomodoro(task, request.user)
-        return redirect('pomodoro-timer')  # Redirect back to the Pomodoro timer page
-
-def stop_pomodoro(request):
-    if request.method == 'POST':
-        ongoing_pomodoro = PomodoroService.get_ongoing_pomodoro()
-        PomodoroService.stop_pomodoro(ongoing_pomodoro)
-        return JsonResponse({'success': True})  # Respond with success JSON
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop("partial", False)
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, data=request.data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        if "action" not in request.data:
+            return Response(
+                {"error": "Action is required."}, status=status.HTTP_400_BAD_REQUEST
+            )
+        action = request.data["action"]
+        if action == "pause":
+            pomodoro_session = PomodoroService.pause_pomodoro(instance)
+        elif action == "resume":
+            pomodoro_session = PomodoroService.resume_pomodoro(instance)
+        elif action == "stop":
+            pomodoro_session = PomodoroService.stop_pomodoro(instance)
+        else:
+            return Response(
+                {"error": "Invalid action provided."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        response_serializer = self.get_serializer(pomodoro_session)
+        return Response(response_serializer.data, status=status.HTTP_200_OK)
