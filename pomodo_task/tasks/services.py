@@ -8,8 +8,8 @@ class BaseService:
     model = None
 
     @classmethod
-    def create(cls, user, **kwargs):
-        obj = cls.model(**kwargs, created_by=user)
+    def create(cls, **kwargs):
+        obj = cls.model(**kwargs)
         obj.save()
         return obj
 
@@ -24,9 +24,9 @@ class BaseService:
     def delete(obj):
         obj.delete()  # soft delete
 
-    @staticmethod
-    def get_by_id(obj_id):
-        return get_object_or_404(BaseService.model, pk=obj_id)
+    @classmethod
+    def get_by_id(cls, obj_id):
+        return get_object_or_404(cls.model, pk=obj_id)
 
 
 class TaskService(BaseService):
@@ -35,9 +35,9 @@ class TaskService(BaseService):
     model = Task
 
     @classmethod
-    def create_task(cls, user, name, description, due_date, priority, project):
+    def create_task(cls, owner, name, description, due_date, priority, project):
         return cls.create(
-            user,
+            owner=owner,
             name=name,
             description=description,
             due_date=due_date,
@@ -46,8 +46,8 @@ class TaskService(BaseService):
         )
 
     @classmethod
-    def get_all_tasks(cls):
-        return cls.model.objects.all()
+    def get_all_tasks(cls, owner):
+        return cls.model.objects.filter(owner=owner)
 
     @classmethod
     def update_task(cls, task, name, description, due_date, priority, project):
@@ -64,6 +64,14 @@ class TaskService(BaseService):
     def get_task_by_id(cls, task_id):
         return cls.model.objects.get(id=task_id)
 
+    @classmethod
+    def complete_task(cls, task):
+        return cls.update(task, is_completed=True)
+
+    @classmethod
+    def delete_task(cls, task):
+        return cls.delete(task)
+
 
 class ProjectService(BaseService):
     """Service class for projects."""
@@ -71,17 +79,26 @@ class ProjectService(BaseService):
     model = Project
 
     @classmethod
-    def create_project(cls, user, name, description):
-        return cls.create(user, name=name, description=description)
+    def create_project(cls, owner, name, description):
+        return cls.create(owner=owner, name=name, description=description)
 
     @classmethod
     def update_project(cls, project, name, description):
         return cls.update(project, name=name, description=description)
 
     @classmethod
-    def get_all_projects(cls):
-        return cls.model.objects.all()
+    def get_all_projects(cls, owner):
+        return cls.model.objects.filter(owner=owner)
 
     @classmethod
     def get_project_by_id(cls, project_id):
         return cls.model.objects.get(id=project_id)
+
+    @classmethod
+    def delete_project(cls, project):
+        return cls.delete(project)
+
+    @classmethod
+    def get_all_tasks_in_project(cls, project):
+        return Task.objects.filter(project=project)
+    
