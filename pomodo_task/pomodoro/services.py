@@ -4,10 +4,14 @@ from pomodoro.models import PomodoroSession
 
 class PomodoroService:
     @classmethod
-    def start_pomodoro(cls, task, is_break, owner):
-        """Start a new Pomodoro session for the given task, break status, and user."""
+    def start_pomodoro(cls, task, is_break, owner, duration):
+        """Start a new Pomodoro session for the given task, break status, user, and duration."""
         return PomodoroSession.objects.create(
-            task=task, start_time=timezone.now(), is_break=is_break, owner=owner
+            task=task,
+            start_time=timezone.now(),
+            is_break=is_break,
+            owner=owner,
+            duration=duration,
         )
 
     @classmethod

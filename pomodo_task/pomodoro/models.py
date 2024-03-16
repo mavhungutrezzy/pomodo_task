@@ -11,7 +11,7 @@ class PomodoroSession(models.Model):
     start_time = models.DateTimeField()
     pause_time = models.DateTimeField(null=True, blank=True)
     end_time = models.DateTimeField(null=True, blank=True)
-    duration = models.DurationField(null=True, blank=True)
+    duration = models.DurationField(default=timezone.timedelta(minutes=25))
     is_completed = models.BooleanField(default=False)
     is_paused = models.BooleanField(default=False)
     is_break = models.BooleanField(default=False)
@@ -61,3 +61,10 @@ class PomodoroSession(models.Model):
         self.duration = self.end_time - self.start_time
         self.is_completed = True
         self.save()
+
+    def get_remaining_time(self):
+        if self.is_completed or self.is_paused:
+            return timezone.timedelta(seconds=0)
+        elapsed_time = timezone.now() - self.start_time
+        remaining_time = self.duration - elapsed_time
+        return max(remaining_time, timezone.timedelta(seconds=0))

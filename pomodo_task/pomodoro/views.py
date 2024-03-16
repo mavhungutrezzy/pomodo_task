@@ -1,3 +1,4 @@
+from datetime import timezone
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework import status
@@ -20,6 +21,9 @@ class PomodoroSessionViewSet(viewsets.ModelViewSet):
             task=serializer.validated_data["task"],
             is_break=serializer.validated_data["is_break"],
             owner=request.user,
+            duration=serializer.validated_data.get(
+                "duration", timezone.timedelta(minutes=25)
+            ),
         )
         response_serializer = self.get_serializer(pomodoro_session)
         return Response(response_serializer.data, status=status.HTTP_201_CREATED)
