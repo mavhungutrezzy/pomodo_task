@@ -66,6 +66,7 @@ WSGI_APPLICATION = "config.wsgi.application"
 # APPS
 # ------------------------------------------------------------------------------
 DJANGO_APPS = [
+    "daphne",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
@@ -90,6 +91,7 @@ THIRD_PARTY_APPS = [
     "django_filters",
     "dj_rest_auth",
     "dj_rest_auth.registration",
+    "channels",
 ]
 
 LOCAL_APPS = [
@@ -334,3 +336,12 @@ SPECTACULAR_SETTINGS = {
     "DESCRIPTION": "API for the Pomodoro app",
     "VERSION": "1.0.0",
 }
+
+# Channels settings
+ASGI_APPLICATION = "config.urls.application"
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
+

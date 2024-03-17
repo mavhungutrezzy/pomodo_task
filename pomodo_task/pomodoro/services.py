@@ -1,5 +1,7 @@
 from django.utils import timezone
 from pomodoro.models import PomodoroSession
+from channels.layers import get_channel_layer
+from asgiref.sync import async_to_sync
 
 
 class PomodoroService:
@@ -30,4 +32,12 @@ class PomodoroService:
     def stop_pomodoro(cls, pomodoro_session):
         """Stop the given Pomodoro session and update the end time and duration."""
         pomodoro_session.stop()
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)(
+            "pomodoro_sessions",
+            {
+                "type": "session_completed",
+                "session_id": pomodoro_session.id,
+            },
+        )
         return pomodoro_session

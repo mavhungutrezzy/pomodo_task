@@ -23,7 +23,6 @@ class PomodoroSessionSerializer(serializers.ModelSerializer):
             "start_time",
             "pause_time",
             "end_time",
-            "duration",
             "is_completed",
             "is_paused",
             "remaining_time",
