@@ -1,6 +1,8 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth import get_user_model
+from datetime import timedelta
+
 
 User = get_user_model()
 
@@ -64,7 +66,11 @@ class PomodoroSession(models.Model):
 
     def get_remaining_time(self):
         if self.is_completed or self.is_paused:
-            return timezone.timedelta(seconds=0)
+            return timedelta(seconds=0)
         elapsed_time = timezone.now() - self.start_time
         remaining_time = self.duration - elapsed_time
-        return max(remaining_time, timezone.timedelta(seconds=0))
+        return max(remaining_time, timedelta(seconds=0))
+
+    def check_and_stop_if_elapsed(self):
+        if self.get_remaining_time() <= timedelta(seconds=0):
+            self.stop()
