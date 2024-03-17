@@ -1,12 +1,10 @@
-from rest_framework import viewsets
+from core.permissions import IsOwnerOrReadOnly
+from django.contrib.auth import get_user_model
+from rest_framework import status, viewsets
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from tasks.serializers import ProjectSerializer, TaskSerializer
 from tasks.services import ProjectService, TaskService
-from rest_framework import status
-from django.contrib.auth import get_user_model
-from core.permissions import IsOwnerOrReadOnly
-from rest_framework.decorators import action
-
 
 User = get_user_model()
 

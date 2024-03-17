@@ -1,13 +1,10 @@
-from rest_framework import viewsets
 from django.utils.timezone import timedelta
-from rest_framework.response import Response
-from rest_framework import status
 from pomodoro.models import PomodoroSession
-from pomodoro.serializers import (
-    PomodoroSessionSerializer,
-    PomodoroSessionCreateSerializer,
-)
+from pomodoro.serializers import (PomodoroSessionCreateSerializer,
+                                  PomodoroSessionSerializer)
 from pomodoro.services import PomodoroService
+from rest_framework import status, viewsets
+from rest_framework.response import Response
 
 
 class PomodoroSessionViewSet(viewsets.ModelViewSet):

@@ -1,5 +1,5 @@
-from tasks.models import Task, Project
 from django.shortcuts import get_object_or_404
+from tasks.models import Project, Task
 
 
 class BaseService:

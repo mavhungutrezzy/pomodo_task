@@ -1,5 +1,5 @@
-from rest_framework import serializers
 from pomodoro.models import PomodoroSession
+from rest_framework import serializers
 
 
 class PomodoroSessionSerializer(serializers.ModelSerializer):

@@ -1,8 +1,7 @@
-from django.db import models
-from django.urls import reverse
-from django.utils import timezone
 from core.constants import PRIORITY_LEVELS
 from django.contrib.auth import get_user_model
+from django.db import models
+from django.utils import timezone
 
 User = get_user_model()
 
@@ -41,7 +40,10 @@ class Task(models.Model):
         blank=True,
     )
     project = models.ForeignKey(
-        Project, on_delete=models.CASCADE, related_name="tasks", null=True, blank=True
+        Project, on_delete=models.CASCADE,
+        related_name="tasks",
+        null=True,
+        blank=True
     )
 
     def __str__(self):
