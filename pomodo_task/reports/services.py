@@ -1,7 +1,8 @@
-# services.py
 from datetime import timedelta, timezone
+
 from django.db.models import Sum
 from pomodoro.models import PomodoroSession
+from tasks.models import Project, Task
 
 
 class ActivitySummaryService:
@@ -78,3 +79,61 @@ class ActivitySummaryService:
             "start_time__date",
             "duration",
         )
+
+    @classmethod
+    def export_activity_details(
+        cls, owner, start_date=None, end_date=None, time_range=None
+    ):
+        pomodoro_sessions = PomodoroSession.objects.filter(owner=owner)
+        tasks = Task.objects.filter(owner=owner)
+        projects = Project.objects.filter(owner=owner)
+
+        if start_date and end_date:
+            pomodoro_sessions = pomodoro_sessions.filter(
+                start_time__date__range=[start_date, end_date]
+            )
+            tasks = tasks.filter(created_at__date__range=[start_date, end_date])
+            projects = projects.filter(created_at__date__range=[start_date, end_date])
+        if time_range:
+            if time_range == "week":
+                pomodoro_sessions = pomodoro_sessions.filter(
+                    start_time__date__range=[
+                        start_date or (end_date - timedelta(days=7)),
+                        end_date or timezone.now().date(),
+                    ]
+                )
+                tasks = tasks.filter(
+                    created_at__date__range=[
+                        start_date or (end_date - timedelta(days=7)),
+                        end_date or timezone.now().date(),
+                    ]
+                )
+                projects = projects.filter(
+                    created_at__date__range=[
+                        start_date or (end_date - timedelta(days=7)),
+                        end_date or timezone.now().date(),
+                    ]
+                )
+            elif time_range == "month":
+                pomodoro_sessions = pomodoro_sessions.filter(
+                    start_time__year=(start_date or end_date).year,
+                    start_time__month=(start_date or end_date).month,
+                )
+                tasks = tasks.filter(
+                    created_at__year=(start_date or end_date).year,
+                    created_at__month=(start_date or end_date).month,
+                )
+                projects = projects.filter(
+                    created_at__year=(start_date or end_date).year,
+                    created_at__month=(start_date or end_date).month,
+                )
+            elif time_range == "year":
+                pomodoro_sessions = pomodoro_sessions.filter(
+                    start_time__year=(start_date or end_date).year,
+                )
+                tasks = tasks.filter(created_at__year=(start_date or end_date).year)
+                projects = projects.filter(
+                    created_at__year=(start_date or end_date).year
+                )
+
+        return tasks, projects, pomodoro_sessions
